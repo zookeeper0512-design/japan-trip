@@ -140,7 +140,7 @@
         <button data-nav="itinerary" onclick="switchTab('itinerary')" class="nav-btn px-3.5 py-2 rounded-full text-xs font-medium tracking-wider transition-colors">每日行程</button>
         <button data-nav="weather" onclick="switchTab('weather')" class="nav-btn px-3.5 py-2 rounded-full text-xs font-medium tracking-wider transition-colors">路線與天氣</button>
         <button data-nav="dining" onclick="switchTab('dining')" class="nav-btn px-3.5 py-2 rounded-full text-xs font-medium tracking-wider transition-colors">飲食火力</button>
-        <button data-nav="album" onclick="switchTab('album')" class="nav-btn px-3.5 py-2 rounded-full text-xs font-medium tracking-wider transition-colors">相簿與清單</button>
+        <button data-nav="album" onclick="switchTab('album')" class="nav-btn px-3.5 py-2 rounded-full text-xs font-medium tracking-wider transition-colors">行前清單</button>
       </nav>
 
       <!-- Backup & Sync Trigger -->
@@ -358,6 +358,20 @@
         </div>
       </div>
 
+      <!-- Car Navigation Mapcode & Phone Quick Reference -->
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p class="font-serifEn italic text-sm text-lightCoffee">Car Navi Quick Input</p>
+            <h3 class="font-serifTc text-lg font-semibold text-deepCoffee">日本車用導航 Mapcode 與電話速查（一鍵複製）</h3>
+          </div>
+          <span class="text-xs text-softInk">日本車機輸入「電話號碼」或「Mapcode」最精準</span>
+        </div>
+        <div id="mapcode-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
       <!-- Daily Driving Legs Summary -->
       <div class="space-y-3">
         <h3 class="font-serifTc text-lg font-semibold text-deepCoffee">七日自駕與移動分段總覽</h3>
@@ -390,93 +404,47 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 5: ALBUM & CHECKLIST (相簿與清單) ==================== -->
-    <section id="view-album" class="view-section hidden fade-in space-y-8">
-      <!-- Sub-toggle between Photo Wall & Packing Checklist -->
-      <div class="flex items-center gap-2 p-1 rounded-full bg-beige border border-hairline w-fit">
-        <button id="subtab-checklist-btn" onclick="switchSubTab('checklist')" class="px-4 py-1.5 rounded-full text-xs font-medium bg-deepCoffee text-cream transition">
-          行前與雪地自駕清單
-        </button>
-        <button id="subtab-photos-btn" onclick="switchSubTab('photos')" class="px-4 py-1.5 rounded-full text-xs font-medium text-softInk transition">
-          旅行照片牆 (DAY 1–7)
-        </button>
-      </div>
-
-      <!-- SUB-SECTION A: PACKING CHECKLIST -->
-      <div id="subview-checklist" class="space-y-5">
-        <div class="journal-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="font-serifTc text-xl font-semibold text-deepCoffee">行前確認與行李檢核表</h2>
-            <p class="text-xs text-softInk mt-1">已針對雙車 MPV 自駕、11 月底北陸降雪及 Day 4 / Day 6 住宿內建洗脫烘調整精簡清單。</p>
-          </div>
-          <div class="w-full sm:w-48">
-            <div class="flex justify-between text-xs text-deepCoffee mb-1">
-              <span>完成進度</span>
-              <span id="checklist-progress-text" class="font-semibold">0%</span>
-            </div>
-            <div class="w-full h-2 rounded-full bg-beige overflow-hidden">
-              <div id="checklist-progress-bar" class="h-full bg-slateBlue transition-all duration-300" style="width: 0%"></div>
-            </div>
-          </div>
+    <!-- ==================== VIEW 5: CHECKLIST (行前清單) ==================== -->
+    <section id="view-album" class="view-section hidden fade-in space-y-6">
+      <div class="journal-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p class="font-serifEn italic text-sm text-lightCoffee">Pre-trip & Snow Driving Checklist</p>
+          <h2 class="font-serifTc text-xl font-semibold text-deepCoffee mt-0.5">行前確認與行李檢核表</h2>
+          <p class="text-xs text-softInk mt-1">已針對雙車 MPV 自駕、11 月底北陸降雪及 Day 4 / Day 6 住宿內建洗脫烘調整精簡清單。</p>
         </div>
-
-        <!-- Add Custom Checklist Item -->
-        <form onsubmit="addChecklistItem(event)" class="flex flex-col sm:flex-row gap-2">
-          <select id="new-check-cat" class="px-3.5 py-2.5 rounded-xl bg-white border border-hairline text-xs text-deepCoffee">
-            <option value="護照及重要文件">護照及重要文件</option>
-            <option value="機票及租車文件">機票及租車文件</option>
-            <option value="保暖衣物">保暖衣物</option>
-            <option value="防滑鞋">防滑鞋</option>
-            <option value="手套、圍巾、帽子">手套、圍巾、帽子</option>
-            <option value="相機及充電設備">相機及充電設備</option>
-            <option value="盥洗用品">盥洗用品</option>
-            <option value="雪地自駕用品">雪地自駕用品</option>
-            <option value="出發前確認事項">出發前確認事項</option>
-          </select>
-          <input id="new-check-text" type="text" required placeholder="輸入自訂待辦或行李項目（例如：日文譯本正本檢查）..."
-            class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-hairline text-xs text-deepCoffee focus:outline-none focus:border-slateBlue">
-          <button type="submit" class="px-5 py-2.5 rounded-xl bg-deepCoffee text-cream text-xs font-medium hover:bg-softInk transition shrink-0">
-            新增項目
-          </button>
-        </form>
-
-        <div id="checklist-categories" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <!-- Populated by JS -->
+        <div class="w-full sm:w-48">
+          <div class="flex justify-between text-xs text-deepCoffee mb-1">
+            <span>完成進度</span>
+            <span id="checklist-progress-text" class="font-semibold">0%</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-beige overflow-hidden">
+            <div id="checklist-progress-bar" class="h-full bg-slateBlue transition-all duration-300" style="width: 0%"></div>
+          </div>
         </div>
       </div>
 
-      <!-- SUB-SECTION B: PHOTO WALL -->
-      <div id="subview-photos" class="hidden space-y-5">
-        <div class="journal-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="font-serifTc text-xl font-semibold text-deepCoffee">旅行拍立得相簿牆</h2>
-            <p class="text-xs text-softInk mt-1">上傳照片後會自動最佳化壓縮並儲存在本機，可依 DAY 1–7 分類瀏覽與放大檢視。</p>
-          </div>
-          <label class="px-4 py-2.5 rounded-full bg-deepCoffee hover:bg-softInk text-cream text-xs font-medium cursor-pointer text-center transition shrink-0">
-            + 上傳旅程照片
-            <input id="photo-upload-input" type="file" accept="image/*" multiple onchange="handlePhotoUpload(event)" class="hidden">
-          </label>
-        </div>
+      <!-- Add Custom Checklist Item -->
+      <form onsubmit="addChecklistItem(event)" class="flex flex-col sm:flex-row gap-2">
+        <select id="new-check-cat" class="px-3.5 py-2.5 rounded-xl bg-white border border-hairline text-xs text-deepCoffee">
+          <option value="護照及重要文件">護照及重要文件</option>
+          <option value="機票及租車文件">機票及租車文件</option>
+          <option value="保暖衣物">保暖衣物</option>
+          <option value="防滑鞋">防滑鞋</option>
+          <option value="手套、圍巾、帽子">手套、圍巾、帽子</option>
+          <option value="相機及充電設備">相機及充電設備</option>
+          <option value="盥洗用品">盥洗用品</option>
+          <option value="雪地自駕用品">雪地自駕用品</option>
+          <option value="出發前確認事項">出發前確認事項</option>
+        </select>
+        <input id="new-check-text" type="text" required placeholder="輸入自訂待辦或行李項目（例如：日文譯本正本檢查）..."
+          class="flex-1 px-4 py-2.5 rounded-xl bg-white border border-hairline text-xs text-deepCoffee focus:outline-none focus:border-slateBlue">
+        <button type="submit" class="px-5 py-2.5 rounded-xl bg-deepCoffee text-cream text-xs font-medium hover:bg-softInk transition shrink-0">
+          新增項目
+        </button>
+      </form>
 
-        <!-- Day Filter for Photos -->
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div id="photo-day-filters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            <!-- Populated by JS -->
-          </div>
-          <select id="upload-target-day" class="px-3 py-1.5 rounded-full bg-beige border border-hairline text-xs text-deepCoffee">
-            <option value="DAY 1">上傳歸類至：DAY 1 (11/28 名古屋)</option>
-            <option value="DAY 2">上傳歸類至：DAY 2 (11/29 夜楓/鰻富士)</option>
-            <option value="DAY 3">上傳歸類至：DAY 3 (11/30 高山老街)</option>
-            <option value="DAY 4">上傳歸類至：DAY 4 (12/01 白川鄉/金澤)</option>
-            <option value="DAY 5">上傳歸類至：DAY 5 (12/02 兼六園)</option>
-            <option value="DAY 6">上傳歸類至：DAY 6 (12/03 恐龍博物館)</option>
-            <option value="DAY 7">上傳歸類至：DAY 7 (12/04 水族館賦歸)</option>
-          </select>
-        </div>
-
-        <div id="photo-gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          <!-- Populated by JS -->
-        </div>
+      <div id="checklist-categories" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Populated by JS -->
       </div>
     </section>
 
@@ -503,7 +471,7 @@
       </button>
       <button data-nav="album" onclick="switchTab('album')" class="mobile-nav-btn flex flex-col items-center py-1 rounded-xl text-[10px]">
         <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-        清單相簿
+        行前清單
       </button>
     </div>
   </nav>
@@ -616,7 +584,7 @@
         <button onclick="closeModal('backupModal')" class="text-softInk hover:text-deepCoffee text-lg">✕</button>
       </div>
       <p class="text-xs text-softInk leading-relaxed">
-        你所有的行程修改、清單勾選與照片都會自動儲存在目前瀏覽器中。若要將最新進度傳給同行旅伴，可匯出 <code>.json</code> 備份檔傳至 LINE 群組，對方匯入即可同步。
+        你所有的行程修改與清單勾選都會自動儲存在目前瀏覽器中。若要將最新進度傳給同行旅伴，可匯出 <code>.json</code> 備份檔傳至 LINE 群組，對方匯入即可同步。
       </p>
       <div class="space-y-2.5 pt-1">
         <button onclick="exportJournalData()" class="w-full py-2.5 px-4 rounded-xl bg-deepCoffee text-cream text-xs font-medium hover:bg-softInk transition flex items-center justify-center gap-2">
@@ -630,18 +598,6 @@
           重置所有資料為初始行程
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- Modal: Photo Lightbox -->
-  <div id="lightboxModal" onclick="closeModal('lightboxModal')" class="fixed inset-0 z-50 hidden bg-deepCoffee/80 backdrop-blur-xs flex items-center justify-center p-4">
-    <div onclick="event.stopPropagation()" class="bg-cream border border-hairline rounded-2xl max-w-2xl w-full p-4 space-y-3 shadow-2xl">
-      <div class="flex items-center justify-between">
-        <span id="lightbox-day" class="px-2.5 py-0.5 rounded-full bg-beige text-xs font-medium text-deepCoffee">DAY 1</span>
-        <button onclick="closeModal('lightboxModal')" class="text-softInk hover:text-deepCoffee text-lg px-2">✕</button>
-      </div>
-      <img id="lightbox-img" src="" alt="旅程照片" class="w-full max-h-[70vh] object-contain rounded-xl bg-beige">
-      <p id="lightbox-caption" class="text-xs text-softInk text-center"></p>
     </div>
   </div>
 
@@ -718,11 +674,11 @@
           dayNum: 1,
           date: '11/28 (六)',
           city: '名古屋',
-          title: '名古屋自由行（市區逛街／樂高樂園）・東山夜楓・炭燒富士鰻魚晚宴',
-          transport: '地鐵、計程車特攻',
-          drivingSummary: '本日無自駕（白天自由活動，17:00 於東山公園站集合看夜楓）',
-          safetyNote: '11 月底名古屋日落約 16:40，17:00 準時於地鐵「東山公園站」集合步行進入東山動植物園，正好銜接夜間紅葉點燈黃金時段。',
-          diningNote: '晚餐：20:00 已選定【炭燒富士鰻魚 名古屋站太閤口店】（日本〒453-0015 Aichi, Nagoya, Nakamura Ward, Tsubakicho, 15−10 名駅三交ビル 1階）。',
+          title: '飛抵中部國際機場・名鐵特急直達名驛・和牛燒肉百名山晚宴',
+          transport: '名鐵 µ-SKY 特急、步行／短程計程車',
+          drivingSummary: '本日無自駕（18:30 降落 NGO 機場 → 20:00 搭乘名鐵 µ-SKY → 20:40 抵達名驛西口）',
+          safetyNote: '20:40 抵達名驛西口入住包棟 Airbnb 放置大件行李後，步行約 5-7 分鐘即可抵達 21:00 已訂位的和牛燒肉百名山。',
+          diningNote: '晚餐：21:00 已訂位【和牛燒肉 百名山 名駅西店】（9-17 Tsubakicho, Nakamura Ward, Nagoya）。',
           stayRef: 0,
           events: [
             {
@@ -1224,14 +1180,12 @@
         { category: '雪地自駕用品', text: '日幣零錢與千元鈔（計程車分乘與老街小吃專用）', done: false },
         { category: '出發前確認事項', text: '福井縣立恐龍博物館預約 QR Code 存於手機相簿', done: false },
         { category: '出發前確認事項', text: '確認 Day 2 炭燒鰻富士 (20:00) 與 Day 4 appare 本店 (19:00) 訂位資訊', done: false }
-      ],
-      photos: []
+      ]
     };
 
     // State Initialization
     let appData = loadData();
     let currentDiningFilter = 'ALL';
-    let currentPhotoFilter = 'ALL';
 
     function loadData() {
       try {
@@ -1627,6 +1581,40 @@
     }
 
     function renderDrivingLegs() {
+      const naviSpots = [
+        { day: 'DAY 1–2 住宿', name: '名驛西口包棟 Airbnb', mapcode: '4 287 567*44', tel: '無市話（請用 Mapcode 或地址）', note: '5-chōme-4-11 Taikō, Nakamura-ku' },
+        { day: 'DAY 3 住宿', name: '高山綠色酒店 (櫻凜閣)', mapcode: '191 195 162*85', tel: '0577-33-5500', note: '附設大型全平面停車場' },
+        { day: 'DAY 4 景點', name: '白川鄉 村外大平面停車場', mapcode: '549 018 525*63', tel: '05769-6-1311', note: 'せせらぎ公園駐車場（過橋進村）' },
+        { day: 'DAY 4–5 住宿', name: '金澤市區包棟 Airbnb', mapcode: '41 528 456*11', tel: '無市話（泊入外圍平面場）', note: '5-4 Oyamamachi 八田ビル1階' },
+        { day: 'DAY 6 景點', name: '福井縣立恐龍博物館', mapcode: '240 434 257*82', tel: '0779-88-0001', note: '勝山市村岡町寺尾 51-11' },
+        { day: 'DAY 6 住宿', name: 'Gold Stay Nagoya Sakae', mapcode: '4 259 565*22', tel: '052-262-3330', note: '榮商圈專屬平面車位' },
+        { day: 'DAY 7 景點', name: '名古屋港水族館（花園碼頭）', mapcode: '4 016 742*71', tel: '052-654-7080', note: '港區港町 1-3（鄰近大型平面場）' },
+        { day: 'DAY 7 還車', name: '中部國際機場 (Centrair)', mapcode: '170 293 382*55', tel: '0569-38-1195', note: '先直抵 3F 出境大門卸貨再還車' }
+      ];
+
+      const mapcodeEl = document.getElementById('mapcode-grid');
+      if (mapcodeEl) {
+        mapcodeEl.innerHTML = naviSpots.map(s => `
+          <div class="journal-card p-4 flex flex-col justify-between space-y-2.5">
+            <div>
+              <span class="px-2 py-0.5 rounded-full bg-beige text-[10px] font-medium text-deepCoffee">${s.day}</span>
+              <h4 class="font-serifTc font-semibold text-sm text-deepCoffee mt-1.5">${s.name}</h4>
+              <p class="text-[11px] text-lightCoffee mt-0.5">${s.note}</p>
+            </div>
+            <div class="space-y-1.5 pt-2 border-t border-hairline text-xs">
+              <div class="flex items-center justify-between gap-2 bg-cream px-2.5 py-1.5 rounded-lg border border-hairline">
+                <span class="text-softInk">Mapcode：<strong class="font-serifEn text-deepCoffee tracking-wider">${s.mapcode}</strong></span>
+                <button onclick="copyNaviText('${s.mapcode}', 'Mapcode')" class="px-2 py-0.5 rounded bg-beige hover:bg-oat text-[11px] text-deepCoffee shrink-0">複製</button>
+              </div>
+              <div class="flex items-center justify-between gap-2 bg-cream px-2.5 py-1.5 rounded-lg border border-hairline">
+                <span class="text-softInk truncate">電話：<strong class="text-deepCoffee">${s.tel}</strong></span>
+                ${s.tel.startsWith('0') ? `<button onclick="copyNaviText('${s.tel}', '電話號碼')" class="px-2 py-0.5 rounded bg-beige hover:bg-oat text-[11px] text-deepCoffee shrink-0">複製</button>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
       const legs = [
         { day: 'DAY 3 (11/30)', route: '名驛 Airbnb → 東海北陸自動車道 → 高山綠色酒店', time: '約 3 小時', driver: 'A 組主駕', note: '直奔高山；取車確認雪胎與 ETC 正常。' },
         { day: 'DAY 4 (12/01)', route: '高山綠色酒店 → 白川鄉合掌村 → 金澤尾山町民宿', time: '50 分 + 1 小時 15 分', driver: 'A 組主駕', note: '14:30 準時發車離開白川鄉，避開山路夜駕；金澤車輛泊入外圍平面場。' },
@@ -1743,20 +1731,7 @@
       renderDiningView();
     }
 
-    // ==================== RENDER CHECKLIST & PHOTOS ====================
-    function switchSubTab(sub) {
-      const isCheck = sub === 'checklist';
-      document.getElementById('subview-checklist').classList.toggle('hidden', !isCheck);
-      document.getElementById('subview-photos').classList.toggle('hidden', isCheck);
-
-      document.getElementById('subtab-checklist-btn').className = isCheck
-        ? 'px-4 py-1.5 rounded-full text-xs font-medium bg-deepCoffee text-cream transition'
-        : 'px-4 py-1.5 rounded-full text-xs font-medium text-softInk transition';
-      document.getElementById('subtab-photos-btn').className = !isCheck
-        ? 'px-4 py-1.5 rounded-full text-xs font-medium bg-deepCoffee text-cream transition'
-        : 'px-4 py-1.5 rounded-full text-xs font-medium text-softInk transition';
-    }
-
+    // ==================== RENDER CHECKLIST ====================
     function renderChecklistView() {
       const total = appData.checklist.length;
       const doneCount = appData.checklist.filter(i => i.done).length;
@@ -1815,113 +1790,6 @@
       renderChecklistView();
     }
 
-    // Photo Wall with Canvas Compression
-    function handlePhotoUpload(e) {
-      const files = Array.from(e.target.files || []);
-      const targetDay = document.getElementById('upload-target-day').value;
-      if (!files.length) return;
-
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          const img = new Image();
-          img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const maxDim = 900;
-            let w = img.width;
-            let h = img.height;
-            if (w > maxDim || h > maxDim) {
-              if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
-              else { w = Math.round(w * maxDim / h); h = maxDim; }
-            }
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
-            appData.photos.unshift({
-              id: Date.now() + Math.random(),
-              day: targetDay,
-              caption: file.name.replace(/\.[^/.]+$/, ''),
-              src: dataUrl
-            });
-            saveData(`已將照片加入 ${targetDay}`);
-            renderPhotoWall();
-          };
-          img.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-      e.target.value = '';
-    }
-
-    function renderPhotoWall() {
-      const filters = ['ALL', 'DAY 1', 'DAY 2', 'DAY 3', 'DAY 4', 'DAY 5', 'DAY 6', 'DAY 7'];
-      document.getElementById('photo-day-filters').innerHTML = filters.map(f => `
-        <button onclick="setPhotoFilter('${f}')"
-          class="shrink-0 px-3 py-1 rounded-full text-xs border transition ${
-            currentPhotoFilter === f
-              ? 'bg-deepCoffee text-cream border-deepCoffee'
-              : 'bg-white text-softInk border-hairline hover:bg-beige'
-          }">
-          ${f === 'ALL' ? '全部照片' : f}
-        </button>
-      `).join('');
-
-      const list = currentPhotoFilter === 'ALL'
-        ? appData.photos
-        : appData.photos.filter(p => p.day === currentPhotoFilter);
-
-      const grid = document.getElementById('photo-gallery-grid');
-      if (!list.length) {
-        grid.innerHTML = `
-          <div class="col-span-full journal-card-beige p-10 text-center space-y-2">
-            <p class="font-serifTc text-base text-deepCoffee">尚未上傳此時段的旅程照片</p>
-            <p class="text-xs text-softInk">點擊上方「+ 上傳旅程照片」，即可將楓葉、飛驒牛、合掌村與恐龍博物館回憶收藏進手帳。</p>
-          </div>
-        `;
-        return;
-      }
-
-      grid.innerHTML = list.map(p => {
-        const realIdx = appData.photos.indexOf(p);
-        return `
-          <div class="journal-card p-2.5 flex flex-col justify-between group">
-            <div class="relative aspect-square rounded-xl overflow-hidden bg-beige cursor-pointer" onclick="openLightbox(${realIdx})">
-              <img src="${p.src}" alt="${p.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-              <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-cream/90 text-[10px] font-medium text-deepCoffee">
-                ${p.day}
-              </span>
-            </div>
-            <div class="pt-2 px-1 flex items-center justify-between gap-1">
-              <span class="text-[11px] text-softInk truncate">${p.caption}</span>
-              <button onclick="deletePhoto(${realIdx})" class="text-[11px] text-red-700/60 hover:text-red-700">✕</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function setPhotoFilter(f) {
-      currentPhotoFilter = f;
-      renderPhotoWall();
-    }
-
-    function openLightbox(idx) {
-      const p = appData.photos[idx];
-      if (!p) return;
-      document.getElementById('lightbox-img').src = p.src;
-      document.getElementById('lightbox-day').textContent = p.day;
-      document.getElementById('lightbox-caption').textContent = p.caption;
-      openModal('lightboxModal');
-    }
-
-    function deletePhoto(idx) {
-      appData.photos.splice(idx, 1);
-      saveData('已刪除照片');
-      renderPhotoWall();
-    }
-
     // ==================== BACKUP / IMPORT / RESET ====================
     function exportJournalData() {
       const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
@@ -1966,6 +1834,24 @@
     }
 
     // Modal Helpers
+    function copyNaviText(val, label) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(val).then(() => showToast(`已複製${label}：${val}`)).catch(() => fallbackCopy(val, label));
+      } else {
+        fallbackCopy(val, label);
+      }
+    }
+
+    function fallbackCopy(val, label) {
+      const ta = document.createElement('textarea');
+      ta.value = val;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(`已複製${label}：${val}`);
+    }
+
     function openModal(id) {
       document.getElementById(id).classList.remove('hidden');
     }
@@ -1980,7 +1866,6 @@
       renderDrivingLegs();
       renderDiningView();
       renderChecklistView();
-      renderPhotoWall();
     }
 
     window.addEventListener('DOMContentLoaded', () => {

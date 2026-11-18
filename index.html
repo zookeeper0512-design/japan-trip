@@ -90,6 +90,30 @@
 </head>
 <body class="paper-texture pb-24 md:pb-12">
 
+  <!-- Passcode Lock Screen Overlay -->
+  <div id="passcode-lock-screen" class="fixed inset-0 z-50 bg-cream/98 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="journal-card max-w-sm w-full p-7 text-center space-y-5 shadow-xl">
+      <div class="w-12 h-12 rounded-full bg-beige border border-hairline flex items-center justify-center mx-auto text-deepCoffee font-serifEn font-bold text-base">
+        北陸
+      </div>
+      <div>
+        <p class="font-serifEn text-xs tracking-[0.22em] text-slateBlue uppercase">Private Travel Journal</p>
+        <h2 class="font-serifTc text-xl font-semibold text-deepCoffee mt-1">中部・北陸七日自駕手帳</h2>
+        <p class="text-xs text-softInk mt-2 leading-relaxed">
+          為保護同行夥伴住宿與行程隱私，請輸入專屬通行密碼
+        </p>
+      </div>
+      <form onsubmit="verifyPasscode(event)" class="space-y-3">
+        <input id="passcode-input" type="password" maxlength="10" placeholder="••••" required
+          class="w-44 mx-auto block text-center tracking-[0.35em] text-lg font-serifEn font-bold py-2.5 px-4 rounded-xl bg-cream border border-hairline text-deepCoffee uppercase focus:outline-none focus:border-slateBlue">
+        <p id="passcode-error" class="text-xs text-red-700 hidden">通行密碼錯誤，請重新輸入</p>
+        <button type="submit" class="w-full py-2.5 rounded-full bg-deepCoffee hover:bg-softInk text-cream text-xs font-medium tracking-wider transition">
+          解鎖進入手帳
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 hidden px-5 py-2.5 rounded-full bg-deepCoffee text-cream text-xs tracking-wider shadow-lg transition-all">
     已儲存變更
@@ -367,102 +391,6 @@
     </section>
 
     <!-- ==================== VIEW 5: ALBUM & CHECKLIST (相簿與清單) ==================== -->
-    <section id="view-budget" class="view-section hidden fade-in space-y-6">
-      <div class="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p class="font-serifEn italic text-sm text-lightCoffee">LightSplit Mode ・ Shared Ledger</p>
-          <h2 class="font-serifTc text-2xl font-semibold text-deepCoffee">旅行預算與成員精準分帳</h2>
-        </div>
-        <button onclick="openAddExpenseModal()" class="px-4 py-2 rounded-full bg-deepCoffee text-cream text-xs font-medium hover:bg-softInk transition">
-          + 記一筆分帳
-        </button>
-      </div>
-
-      <!-- Exchange Rate, Total Budget & Member Manager -->
-      <div class="journal-card p-5 space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-[11px] tracking-wider text-lightCoffee uppercase mb-1">日幣匯率設定 (1 JPY = ? TWD)</label>
-            <input id="exchange-rate-input" type="number" step="0.001" value="0.215" onchange="updateBudgetSettings()"
-              class="w-full px-3.5 py-2 rounded-xl bg-cream border border-hairline text-sm font-medium text-deepCoffee focus:outline-none focus:border-slateBlue">
-          </div>
-          <div>
-            <label class="block text-[11px] tracking-wider text-lightCoffee uppercase mb-1">全團總預算目標 (TWD 台幣)</label>
-            <input id="total-budget-input" type="number" step="1000" value="360000" onchange="updateBudgetSettings()"
-              class="w-full px-3.5 py-2 rounded-xl bg-cream border border-hairline text-sm font-medium text-deepCoffee focus:outline-none focus:border-slateBlue">
-          </div>
-        </div>
-
-        <!-- Member Pills Management -->
-        <div class="pt-3 border-t border-hairline">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <label class="text-[11px] tracking-wider text-lightCoffee uppercase">同行分帳成員名單（點擊名字可重新命名）</label>
-            <div class="flex items-center gap-1.5">
-              <input id="new-member-name" type="text" placeholder="輸入新成員名稱..." class="px-3 py-1 rounded-full bg-cream border border-hairline text-xs text-deepCoffee w-36 focus:outline-none focus:border-slateBlue">
-              <button type="button" onclick="addMember()" class="px-3 py-1 rounded-full bg-beige hover:bg-oat border border-hairline text-xs text-deepCoffee font-medium">+ 新增成員</button>
-            </div>
-          </div>
-          <div id="member-tags-list" class="flex flex-wrap gap-2">
-            <!-- Populated by JS -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Budget Summary Cards -->
-      <div id="budget-summary-cards" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- Populated by JS -->
-      </div>
-
-      <!-- LightSplit Settlement Dashboard -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <!-- Individual Member Balance Table -->
-        <div class="journal-card p-5 space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="font-serifTc font-semibold text-sm text-deepCoffee">個人墊付 vs 應分攤結算表 (TWD)</h3>
-            <span class="text-[11px] text-lightCoffee">+應收回 / -應補付</span>
-          </div>
-          <div id="member-balance-table" class="divide-y divide-hairline text-xs">
-            <!-- Populated by JS -->
-          </div>
-        </div>
-
-        <!-- Minimum Transactions Settlement Instructions -->
-        <div class="journal-card-beige p-5 space-y-3 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between">
-              <h3 class="font-serifTc font-semibold text-sm text-deepCoffee">LightSplit 最佳化轉帳結清建議</h3>
-              <span class="px-2 py-0.5 rounded-full bg-cream text-[10px] text-slateBlue border border-hairline">自動抵銷</span>
-            </div>
-            <p class="text-[11px] text-softInk mt-1">系統已自動計算每筆支出的「實際參與分攤人」，並整合為最少次數的轉帳路徑：</p>
-            <div id="settlement-transfers" class="mt-3 space-y-2">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-          <div class="pt-3 border-t border-hairline text-[11px] text-lightCoffee">
-            提示：新增支出時可自由勾選「只有誰需要分」，未勾選的成員不會被計入該筆分攤。
-          </div>
-        </div>
-      </div>
-
-      <!-- Category Breakdown -->
-      <div class="journal-card p-5">
-        <h3 class="font-serifTc font-semibold text-sm text-deepCoffee mb-3">支出類別分佈</h3>
-        <div id="category-breakdown" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-xs"></div>
-      </div>
-
-      <!-- Expense Records Table/List -->
-      <div class="journal-card overflow-hidden">
-        <div class="px-5 py-4 border-b border-hairline flex items-center justify-between">
-          <h3 class="font-serifTc font-semibold text-sm text-deepCoffee">分帳支出明細紀錄</h3>
-          <span id="expense-count" class="text-xs text-lightCoffee">0 筆</span>
-        </div>
-        <div id="expense-list" class="divide-y divide-hairline">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== VIEW 6: ALBUM & CHECKLIST (相簿與清單) ==================== -->
     <section id="view-album" class="view-section hidden fade-in space-y-8">
       <!-- Sub-toggle between Photo Wall & Packing Checklist -->
       <div class="flex items-center gap-2 p-1 rounded-full bg-beige border border-hairline w-fit">
@@ -694,34 +622,59 @@
         <button onclick="exportJournalData()" class="w-full py-2.5 px-4 rounded-xl bg-deepCoffee text-cream text-xs font-medium hover:bg-softInk transition flex items-center justify-center gap-2">
           匯出完整手帳備份檔 (.json)
         </button>
-        <label class="w-full py-2.5 px-4 rounded-xl bg-beige border border-hairline text-deepCoffee text-xs font-medium hover:bg-oat transition flex items-center justify-center gap-2 cursor-pointer">
+        <label class="w-full py-2.5 px-4 rounded-xl bg-beige hover:bg-oat border border-hairline text-deepCoffee text-xs font-medium transition flex items-center justify-center gap-2 cursor-pointer">
           匯入旅伴的備份檔 (.json)
           <input type="file" accept=".json" onchange="importJournalData(event)" class="hidden">
         </label>
-        <button onclick="resetAllData()" class="w-full py-2 px-4 rounded-xl text-red-700/80 hover:bg-red-50 text-xs transition">
+        <button onclick="resetAllData()" class="w-full py-2 px-4 rounded-xl text-xs text-red-700/80 hover:bg-red-50 transition">
           重置所有資料為初始行程
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Lightbox Photo Viewer -->
-  <div id="lightboxModal" class="fixed inset-0 z-50 hidden bg-deepCoffee/85 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeModal('lightboxModal')">
-    <div class="max-w-3xl w-full bg-cream p-3 sm:p-4 rounded-2xl space-y-3" onclick="event.stopPropagation()">
-      <img id="lightbox-img" src="" alt="Travel memory" class="w-full max-h-[75vh] object-contain rounded-xl bg-beige">
-      <div class="flex items-center justify-between px-1">
-        <div>
-          <span id="lightbox-day" class="text-[11px] px-2.5 py-0.5 rounded-full bg-beige text-deepCoffee font-medium"></span>
-          <span id="lightbox-caption" class="text-xs text-softInk ml-2"></span>
-        </div>
-        <button onclick="closeModal('lightboxModal')" class="px-3 py-1 rounded-full bg-deepCoffee text-cream text-xs">關閉</button>
+  <!-- Modal: Photo Lightbox -->
+  <div id="lightboxModal" onclick="closeModal('lightboxModal')" class="fixed inset-0 z-50 hidden bg-deepCoffee/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div onclick="event.stopPropagation()" class="bg-cream border border-hairline rounded-2xl max-w-2xl w-full p-4 space-y-3 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <span id="lightbox-day" class="px-2.5 py-0.5 rounded-full bg-beige text-xs font-medium text-deepCoffee">DAY 1</span>
+        <button onclick="closeModal('lightboxModal')" class="text-softInk hover:text-deepCoffee text-lg px-2">✕</button>
       </div>
+      <img id="lightbox-img" src="" alt="旅程照片" class="w-full max-h-[70vh] object-contain rounded-xl bg-beige">
+      <p id="lightbox-caption" class="text-xs text-softInk text-center"></p>
     </div>
   </div>
 
-  <!-- ==================== JAVASCRIPT DATA & LOGIC ==================== -->
   <script>
+    // ==================== JAVASCRIPT DATA & LOGIC ====================
     const STORAGE_KEY = 'chubu_hokuriku_journal_2026_v2';
+    const PASSCODE_STORAGE_KEY = 'chubu_hokuriku_unlocked_rkn';
+    const TRIP_PASSCODE = 'RKN';
+
+    function checkPasscodeState() {
+      try {
+        if (localStorage.getItem(PASSCODE_STORAGE_KEY) === 'true') {
+          const lockEl = document.getElementById('passcode-lock-screen');
+          if (lockEl) lockEl.classList.add('hidden');
+        }
+      } catch (e) {}
+    }
+
+    function verifyPasscode(e) {
+      e.preventDefault();
+      const input = document.getElementById('passcode-input');
+      const errEl = document.getElementById('passcode-error');
+      if (input.value.trim().toUpperCase() === TRIP_PASSCODE) {
+        try { localStorage.setItem(PASSCODE_STORAGE_KEY, 'true'); } catch (err) {}
+        document.getElementById('passcode-lock-screen').classList.add('hidden');
+        errEl.classList.add('hidden');
+        showToast('已解鎖並記住此裝置');
+      } else {
+        errEl.classList.remove('hidden');
+        input.value = '';
+        input.focus();
+      }
+    }
 
     // Default Comprehensive Data strictly matching user's updated itinerary (11/28 - 12/04)
     const DEFAULT_DATA = {
@@ -765,11 +718,11 @@
           dayNum: 1,
           date: '11/28 (六)',
           city: '名古屋',
-          title: '抵達中部國際機場・名鐵直達名驛・21:00 預約晚宴',
-          transport: '名鐵 µ-SKY 特急、步行／短程計程車',
-          drivingSummary: '本日無自駕（搭乘名鐵特急 28 分鐘直達名鐵名古屋站）',
-          safetyNote: '20:40 抵達名驛西口後快速至 Airbnb 放置行李，隨即步行前往 21:00 已訂位餐廳（預約連結已內建於時間軸與飲食專區）。',
-          diningNote: '晚餐：21:00 已訂位名驛周邊餐廳（硬性定錨，點擊時間軸可直接開啟 Google 預約地點）。',
+          title: '名古屋自由行（市區逛街／樂高樂園）・東山夜楓・炭燒富士鰻魚晚宴',
+          transport: '地鐵、計程車特攻',
+          drivingSummary: '本日無自駕（白天自由活動，17:00 於東山公園站集合看夜楓）',
+          safetyNote: '11 月底名古屋日落約 16:40，17:00 準時於地鐵「東山公園站」集合步行進入東山動植物園，正好銜接夜間紅葉點燈黃金時段。',
+          diningNote: '晚餐：20:00 已選定【炭燒富士鰻魚 名古屋站太閤口店】（日本〒453-0015 Aichi, Nagoya, Nakamura Ward, Tsubakicho, 15−10 名駅三交ビル 1階）。',
           stayRef: 0,
           events: [
             {
@@ -796,9 +749,9 @@
             {
               time: '21:00',
               duration: '硬性定錨・已訂位',
-              title: '【已訂位晚宴】21:00 準時入席享用第一晚大餐',
-              desc: '已完成 21:00 訂位（點擊下方 Google Maps 連結可直接導航至已訂位餐廳）。',
-              address: '名古屋駅周辺 予約レストラン',
+              title: '【已訂位晚宴】和牛燒肉 百名山 名駅西店',
+              desc: '已完成 21:00 訂位，由名驛西口民宿步行即可輕鬆抵達享用頂級和牛燒肉。',
+              address: '9-17 Tsubakicho, Nakamura Ward, Nagoya, Aichi 453-0015日本',
               mapUrl: 'https://share.google/9VKRPCOX4R9hopiQ0'
             }
           ]
@@ -807,40 +760,33 @@
           dayNum: 2,
           date: '11/29 (日)',
           city: '名古屋',
-          title: '白天市區全自由行・東山夜楓・炭燒鰻富士晚宴',
+          title: '名古屋自由行（市區逛街／樂高樂園）・東山夜楓・炭燒鰻富士晚宴',
           transport: '地鐵、計程車特攻',
-          drivingSummary: '本日無自駕（16:30 準時於 Airbnb 門口集結分乘 2 輛計程車）',
-          safetyNote: '11 月底名古屋日落約 16:40，16:30 準時集結出發前往東山動植物園正好銜接夜間紅葉點燈黃金時段。',
+          drivingSummary: '本日無自駕（白天自由活動，17:00 於東山公園站集合看夜楓）',
+          safetyNote: '11 月底名古屋日落約 16:40，17:00 準時於地鐵「東山公園站」集合步行進入東山動植物園，正好銜接夜間紅葉點燈黃金時段。',
           diningNote: '晚餐：20:00 已選定【炭燒鰻富士】享用頂級青鰻三吃（ひつまぶし）。',
           stayRef: 0,
           events: [
             {
               time: '09:30 - 16:30',
               duration: '自由活動 7 小時',
-              title: '[市區自由行] 榮商圈、名驛百貨群或大須商店街',
-              desc: '全員依個人步調彈性活動，不設集中集合點，午間各自按節奏用餐。',
-              address: 'Osu Shopping District, Naka Ward, Nagoya'
+              title: '[名古屋自由行] 市區逛街／樂高樂園分頭探索',
+              desc: '全員依個人喜好彈性安排行程（可前往日本樂高樂園 LEGOLAND Japan，或走訪榮商圈、名驛百貨群、大須商店街逛街），午間各自按節奏用餐。',
+              address: 'LEGOLAND Japan, Minato Ward, Nagoya, Aichi'
             },
             {
-              time: '16:30',
-              duration: '車程約 25-30 分鐘',
-              title: '[集結防線] 名驛 Airbnb 門口準時集合',
-              desc: '全員於民宿門口準時集合，分乘 2 輛計程車直攻東山動植物園。',
-              address: '5-chōme-4-11 Taikō, Nagoya, Aichi 453-0801, 日本'
-            },
-            {
-              time: '17:15 - 19:30',
-              duration: '停留 2 小時 15 分',
-              title: '深度參觀【東山動植物園】夜間紅葉點燈',
-              desc: '欣賞秋季限定紅葉ライトアップ光影倒映與庭園夜楓。',
-              address: 'Higashiyama Zoo and Botanical Gardens, Chikusa Ward, Nagoya'
+              time: '17:00',
+              duration: '集合・夜楓參觀 2.5 小時',
+              title: '[東山公園站集合] 參觀東山動植物園夜間紅葉點燈',
+              desc: '17:00 準時於地鐵東山線「東山公園站」集合，步行進入東山動植物園欣賞秋季限定夜間紅葉點燈（ライトアップ）。',
+              address: 'Higashiyama Koen Station, Chikusa Ward, Nagoya, Aichi'
             },
             {
               time: '20:00',
               duration: '計程車返程・晚餐',
-              title: '返回市區享用【炭燒鰻富士】青鰻三吃晚宴',
-              desc: '搭乘計程車返回市區，享用炭燒鰻富士招牌青鰻三吃（ひつまぶし）。',
-              address: '炭焼 うな富士 名古屋'
+              title: '前往【炭燒富士鰻魚 名古屋站太閤口店】享用晚宴',
+              desc: '由東山公園搭計程車返回名古屋站太閤口，享用炭燒富士鰻魚招牌青鰻三吃（ひつまぶし）。',
+              address: '日本〒453-0015 Aichi, Nagoya, Nakamura Ward, Tsubakicho, 15−10 名駅三交ビル 1階'
             }
           ]
         },
@@ -972,39 +918,46 @@
           dayNum: 5,
           date: '12/02 (三)',
           city: '金澤',
-          title: '金澤美學無車特攻・兼六園雪吊與香林坊補單',
+          title: '近江町市場・金澤 21 世紀美術館・兼六園雪吊・東茶屋街',
           transport: '市區計程車特攻（全日車輛維持外圍定泊不動）',
           drivingSummary: '本日零自駕（兩輛 MPV 維持外圍大平面場定泊，全團市區計程車移動）',
           safetyNote: '金澤市區觀光景點停車位狹小且單行道多，維持雙車定泊不動、分乘計程車移動最省時且零違停風險。',
-          diningNote: '午餐：兼六園周邊金澤茶屋，或香林坊質感喫茶。晚餐：預約【もりもり寿し】享用金澤名物紅喉魚（のどぐろ）迴轉壽司，或在地加賀居酒屋。',
+          diningNote: '早午餐：近江町市場現撈海鮮丼與生蠔小吃。晚餐：18:00 預約【もりもり寿し】享用金澤名物紅喉魚（のどぐろ）迴轉壽司，或在地加賀居酒屋。',
           stayRef: 2,
           events: [
             {
-              time: '10:00',
+              time: '09:00',
+              duration: '停留約 1.5 小時',
+              title: '計程車直達【近江町市場】晨間海鮮巡禮',
+              desc: '走訪金澤市民的廚房「近江町市場」，品嚐北陸當季海鮮丼、甜蝦、現開生蠔與金澤關東煮。',
+              address: 'Omicho Market, 50 Kamiomicho, Kanazawa, Ishikawa'
+            },
+            {
+              time: '10:30',
               duration: '停留約 2.5 小時',
-              title: '計程車直攻【金澤 21 世紀美術館】',
+              title: '計程車移動至【金澤 21 世紀美術館】',
               desc: '參觀當代藝術展覽、泳池經典空間與戶外草坪裝置。',
               address: '21st Century Museum of Contemporary Art, Kanazawa, Ishikawa'
             },
             {
-              time: '12:30',
-              duration: '漫步與午餐 2 小時',
+              time: '13:00',
+              duration: '漫步 2 小時',
               title: '步行穿過石川門・進入【兼六園】',
-              desc: '漫步觀賞日本三大名園冬季特色「雪吊」工藝與晚秋園林景色，並於周邊茶屋享用午餐。',
+              desc: '漫步觀賞日本三大名園冬季特色「雪吊」工藝與晚秋園林景色。',
               address: 'Kenroku-en, 1 Kenrokumachi, Kanazawa, Ishikawa'
             },
             {
-              time: '14:30',
-              duration: '採買 3.5 小時',
-              title: '計程車移動至【香林坊商圈】',
-              desc: '直擊 United Arrows 等日系選品店及大和百貨進行採買與單品補齊。',
-              address: 'Korinbo, Kanazawa, Ishikawa'
+              time: '15:00',
+              duration: '古街漫步 2.5 小時',
+              title: '計程車移動至【東茶屋街】',
+              desc: '漫步江戶時代傳統木造茶屋建築群，品嚐金箔霜淇淋、和菓子與加賀棒茶。',
+              address: 'Higashi Chaya District, Higashiyama, Kanazawa, Ishikawa'
             },
             {
               time: '18:00',
               duration: '晚餐集結',
-              title: '集合前往晚餐地點',
-              desc: '享用預約【もりもり寿し】金澤紅喉魚迴轉壽司，或在地加賀居酒屋。',
+              title: '集合前往享用金澤晚餐',
+              desc: '18:00 準時集合，享用預約【もりもり寿し】金澤紅喉魚迴轉壽司，或在地加賀居酒屋。',
               address: 'Morimori Sushi Kanazawa, Ishikawa'
             }
           ]
@@ -1145,25 +1098,25 @@
         {
           region: '名古屋',
           dayLabel: 'DAY 1 (11/28) 21:00 晚宴',
-          name: 'DAY 1 21:00 已訂位餐廳（點擊導航查看地點）',
+          name: '和牛燒肉 百名山 名駅西店',
           status: '已訂位',
-          dish: '第一晚名古屋抵達大餐（已預約 21:00 席次）',
-          price: '依現場點餐',
+          dish: '精選日本黑毛和牛燒肉盛合、厚切牛舌（已預約 21:00 席次）',
+          price: '¥5,000 - ¥8,000 / 人',
           hours: '21:00 準時入席（已訂位）',
-          transit: '距離名驛西口包棟 Airbnb 步行／短程移動可達',
-          query: '名古屋駅周辺 予約レストラン',
+          transit: '地址：9-17 Tsubakicho, Nakamura Ward, Nagoya（距離名驛西口民宿步行約 5-7 分鐘）',
+          query: '和牛焼肉 百名山 名駅西店 9-17 Tsubakicho, Nakamura Ward, Nagoya',
           mapUrl: 'https://share.google/9VKRPCOX4R9hopiQ0'
         },
         {
           region: '名古屋',
           dayLabel: 'DAY 2 (11/29) 20:00 晚宴',
-          name: '炭燒鰻富士（炭焼 うな富士）',
+          name: '炭燒富士鰻魚 名古屋站太閤口店（炭焼 うな富士）',
           status: '已選定',
           dish: '頂級青鰻三吃（ひつまぶし）、肝燒鰻魚飯、白燒青鰻',
           price: '¥4,800 - ¥6,800 / 人',
           hours: '11:00 - 14:00 / 17:00 - 21:00（建議預約 20:00 席次）',
-          transit: '由東山動植物園搭計程車返回名驛或鶴舞本店約 20-25 分鐘',
-          query: '炭焼 うな富士 名古屋'
+          transit: '地址：日本〒453-0015 Aichi, Nagoya, Nakamura Ward, Tsubakicho, 15−10 名駅三交ビル 1階（距離名驛西口民宿步行約 6-8 分鐘）',
+          query: '炭焼 うな富士 名駅太閤口店 日本〒453-0015 Aichi, Nagoya, Nakamura Ward, Tsubakicho, 15−10 名駅三交ビル 1階'
         },
         {
           region: '飛驒高山',
@@ -2031,6 +1984,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      checkPasscodeState();
       initAllViews();
       switchTab('home');
     });
